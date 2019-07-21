@@ -5,9 +5,14 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
+import android.speech.tts.TextToSpeech;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+
+import org.w3c.dom.Text;
+
+import java.util.Locale;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -15,6 +20,7 @@ public class MainActivity extends AppCompatActivity {
     protected Button sendButton;
     protected EditText userMessage;
     protected RecyclerView chatWindow;
+    protected TextToSpeech tts;
 
     protected MessageController messageController;
 
@@ -37,6 +43,14 @@ public class MainActivity extends AppCompatActivity {
         messageController = new MessageController();
         chatWindow.setLayoutManager(new LinearLayoutManager(this));
         chatWindow.setAdapter(messageController);
+
+
+        tts = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+                tts.setLanguage(new Locale("en"));
+            }
+        });
     }
 
     protected void onClickListener() {
@@ -44,11 +58,10 @@ public class MainActivity extends AppCompatActivity {
         userMessage.setText(""); //field clean
 
         messageController.messageList.add(new Message(message, true));
-        //chatWindow.append("\n>> " + message);
         String answer = AI.getAnswer(message);
-        //chatWindow.append("\n<< " + answer);
-
         messageController.messageList.add(new Message(answer, false));
+
+        tts.speak(answer, TextToSpeech.QUEUE_FLUSH, null, null);
 
         messageController.notifyDataSetChanged();
         chatWindow.scrollToPosition(messageController.messageList.size() - 1);
