@@ -48,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
         String answer = AI.getAnswer(message);
         //chatWindow.append("\n<< " + answer);
 
-        messageController.messageList.add(new Message(answer, true));
+        messageController.messageList.add(new Message(answer, false));
 
         messageController.notifyDataSetChanged();
         chatWindow.scrollToPosition(messageController.messageList.size() - 1);
