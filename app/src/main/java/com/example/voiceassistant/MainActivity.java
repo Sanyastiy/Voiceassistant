@@ -13,6 +13,7 @@ import android.widget.EditText;
 import org.w3c.dom.Text;
 
 import java.util.Locale;
+import java.util.function.Consumer;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -58,12 +59,15 @@ public class MainActivity extends AppCompatActivity {
         userMessage.setText(""); //field clean
 
         messageController.messageList.add(new Message(message, true));
-        String answer = AI.getAnswer(message);
-        messageController.messageList.add(new Message(answer, false));
+        AI.getAnswer(message, new Consumer<String>() {
+            @Override
+            public void accept(String answer) {
+                messageController.messageList.add(new Message(answer, false));
+                tts.speak(answer, TextToSpeech.QUEUE_FLUSH, null, null);
+                messageController.notifyDataSetChanged();
+                chatWindow.scrollToPosition(messageController.messageList.size() - 1);
+            }
+        });
 
-        tts.speak(answer, TextToSpeech.QUEUE_FLUSH, null, null);
-
-        messageController.notifyDataSetChanged();
-        chatWindow.scrollToPosition(messageController.messageList.size() - 1);
     }
 }
